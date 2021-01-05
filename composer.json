@@ -1,0 +1,33 @@
+{
+    "name": "friendsofhyperf/icomet",
+    "description": "IComet client for Hyperf.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [{
+        "name": "huangdijia",
+        "email": "huangdijia@gmail.com"
+    }],
+    "autoload": {
+        "psr-4": {
+            "FriendsOfHyperf\\IComet\\": "src/"
+        }
+    },
+    "require": {
+        "hyperf/guzzle": "^2.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.14",
+        "swoole/ide-helper": "^4.5",
+        "phpstan/phpstan": "^0.12",
+        "hyperf/di": "^2.1"
+    },
+    "extra": {
+        "hyperf": {
+            "config": "FriendsOfHyperf\\IComet\\ConfigProvider"
+        }
+    },
+    "scripts": {
+        "cs-fix": "php-cs-fixer fix $1",
+        "analyse": "phpstan analyse --memory-limit 300M -l 0 -c phpstan.neon ./src"
+    }
+}
