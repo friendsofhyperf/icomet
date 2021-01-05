@@ -58,6 +58,10 @@ class Response
             $this->decoded = json_decode($this->body(), true);
         }
 
+        if ($key == '') {
+            return $this->decoded;
+        }
+
         return data_get($this->decoded, $key, $default);
     }
 }
