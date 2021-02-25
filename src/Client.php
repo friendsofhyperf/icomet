@@ -12,6 +12,7 @@ namespace FriendsOfHyperf\IComet;
 
 use Closure;
 use Hyperf\Guzzle\ClientFactory;
+use RuntimeException;
 
 class Client implements ClientInterface
 {
@@ -34,10 +35,6 @@ class Client implements ClientInterface
         ]);
     }
 
-    /**
-     * Sign.
-     * @return array
-     */
     public function sign(string $cname, int $expires = 60)
     {
         $response = $this->client->get('/sign', compact('cname', 'expires'));
@@ -45,11 +42,6 @@ class Client implements ClientInterface
         return Response::make($response)->json();
     }
 
-    /**
-     * Push.
-     * @param array|string $content
-     * @return bool
-     */
     public function push(string $cname, $content)
     {
         if (is_array($content)) {
@@ -61,12 +53,6 @@ class Client implements ClientInterface
         return Response::make($response)->json('type') == 'ok';
     }
 
-    /**
-     * Broadcast.
-     * @param array|string $content
-     * @param null|string|string[] $cnames
-     * @return array|bool
-     */
     public function broadcast($content, $cnames = null)
     {
         if (is_array($content)) {
@@ -92,10 +78,6 @@ class Client implements ClientInterface
         return parallel($callbacks, (int) $this->config->get('concurrent.limit', 64));
     }
 
-    /**
-     * Check.
-     * @return bool
-     */
     public function check(string $cname)
     {
         $response = $this->client->get('/check', compact('cname'));
@@ -103,11 +85,6 @@ class Client implements ClientInterface
         return isset(Response::make($response)->json()[$cname]);
     }
 
-    /**
-     * Close.
-     *
-     * @return bool
-     */
     public function close(string $cname)
     {
         $response = $this->client->get('/close', compact('cname'));
@@ -115,10 +92,6 @@ class Client implements ClientInterface
         return substr(Response::make($response)->body(), 0, 2) == 'ok';
     }
 
-    /**
-     * Clear.
-     * @return bool
-     */
     public function clear(string $cname)
     {
         $response = $this->client->get('/clear', compact('cname'));
@@ -126,10 +99,6 @@ class Client implements ClientInterface
         return substr(Response::make($response)->body(), 0, 2) == 'ok';
     }
 
-    /**
-     * Info.
-     * @return array
-     */
     public function info(string $cname = '')
     {
         $response = $this->client->get('/info', $cname ? compact('cname') : []);
@@ -137,16 +106,13 @@ class Client implements ClientInterface
         return Response::make($response)->json();
     }
 
-    /**
-     * Psub.
-     */
     public function psub(Closure $callback)
     {
         $url = rtrim($this->config->get('uri'), '/') . '/psub';
         $handle = fopen($url, 'rb');
 
         if ($handle === false) {
-            throw new \RuntimeException('Cannot open ' . $url);
+            throw new RuntimeException('Cannot open ' . $url);
         }
 
         while (! feof($handle)) {

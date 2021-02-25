@@ -22,9 +22,10 @@ interface ClientInterface
 
     /**
      * Push.
+     * @param array|string $content
      * @return bool
      */
-    public function push(string $cname, string $content);
+    public function push(string $cname, $content);
 
     /**
      * Broadcast.
