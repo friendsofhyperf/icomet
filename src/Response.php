@@ -55,7 +55,7 @@ class Response
     public function json(string $key = '', $default = null)
     {
         if (is_null($this->decoded)) {
-            $this->decoded = json_decode($this->body(), true);
+            $this->decoded = json_decode(trim($this->body()), true, 512, JSON_THROW_ON_ERROR);
         }
 
         if ($key == '') {
