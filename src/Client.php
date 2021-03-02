@@ -37,7 +37,7 @@ class Client implements ClientInterface
 
     public function sign(string $cname, int $expires = 60)
     {
-        $response = $this->client->get('/sign', compact('cname', 'expires'));
+        $response = $this->client->request('GET', '/sign', compact('cname', 'expires'));
 
         return Response::make($response)->json();
     }
@@ -48,7 +48,7 @@ class Client implements ClientInterface
             $content = json_encode($content, JSON_UNESCAPED_UNICODE);
         }
 
-        $response = $this->client->get('/push', compact('cname', 'content'));
+        $response = $this->client->request('GET', '/push', ['query' => compact('cname', 'content')]);
 
         return Response::make($response)->json('type') == 'ok';
     }
@@ -60,7 +60,7 @@ class Client implements ClientInterface
         }
 
         if (is_null($cnames)) {
-            $response = $this->client->get('/broadcast', compact('content'));
+            $response = $this->client->request('GET', '/broadcast', ['query' => compact('content')]);
 
             return Response::make($response)->body() == 'ok';
         }
@@ -69,7 +69,7 @@ class Client implements ClientInterface
 
         foreach ((array) $cnames as $cname) {
             $callbacks[] = function () use ($cname, $content) {
-                $response = $this->client->get('/broadcast', compact('cname', 'content'));
+                $response = $this->client->request('GET', '/broadcast', ['query' => compact('cname', 'content')]);
 
                 return Response::make($response)->body() == 'ok';
             };
@@ -80,28 +80,28 @@ class Client implements ClientInterface
 
     public function check(string $cname)
     {
-        $response = $this->client->get('/check', compact('cname'));
+        $response = $this->client->request('GET', '/check', ['query' => compact('cname')]);
 
         return isset(Response::make($response)->json()[$cname]);
     }
 
     public function close(string $cname)
     {
-        $response = $this->client->get('/close', compact('cname'));
+        $response = $this->client->request('GET', '/close', ['query' => compact('cname')]);
 
         return substr(Response::make($response)->body(), 0, 2) == 'ok';
     }
 
     public function clear(string $cname)
     {
-        $response = $this->client->get('/clear', compact('cname'));
+        $response = $this->client->request('GET', '/clear', ['query' => compact('cname')]);
 
         return substr(Response::make($response)->body(), 0, 2) == 'ok';
     }
 
     public function info(string $cname = '')
     {
-        $response = $this->client->get('/info', $cname ? compact('cname') : []);
+        $response = $this->client->request('GET', '/info', ['query' => $cname ? compact('cname') : []]);
 
         return Response::make($response)->json();
     }
