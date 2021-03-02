@@ -37,7 +37,7 @@ class Client implements ClientInterface
 
     public function sign(string $cname, int $expires = 60)
     {
-        $response = $this->client->request('GET', '/sign', compact('cname', 'expires'));
+        $response = $this->client->request('GET', '/sign', ['query' => compact('cname', 'expires')]);
 
         return Response::make($response)->json();
     }
