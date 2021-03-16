@@ -35,14 +35,14 @@ class Client implements ClientInterface
         ]);
     }
 
-    public function sign(string $cname, int $expires = 60)
+    public function sign($cname, int $expires = 60)
     {
         $response = $this->client->request('GET', '/sign', ['query' => compact('cname', 'expires')]);
 
         return Response::make($response)->json();
     }
 
-    public function push(string $cname, $content)
+    public function push($cname, $content)
     {
         if (is_array($content)) {
             $content = json_encode($content, JSON_UNESCAPED_UNICODE);
@@ -78,28 +78,28 @@ class Client implements ClientInterface
         return parallel($callbacks, (int) $this->config->get('concurrent.limit', 64));
     }
 
-    public function check(string $cname)
+    public function check($cname)
     {
         $response = $this->client->request('GET', '/check', ['query' => compact('cname')]);
 
         return isset(Response::make($response)->json()[$cname]);
     }
 
-    public function close(string $cname)
+    public function close($cname)
     {
         $response = $this->client->request('GET', '/close', ['query' => compact('cname')]);
 
         return substr(Response::make($response)->body(), 0, 2) == 'ok';
     }
 
-    public function clear(string $cname)
+    public function clear($cname)
     {
         $response = $this->client->request('GET', '/clear', ['query' => compact('cname')]);
 
         return substr(Response::make($response)->body(), 0, 2) == 'ok';
     }
 
-    public function info(string $cname = '')
+    public function info($cname = '')
     {
         $response = $this->client->request('GET', '/info', ['query' => $cname ? compact('cname') : []]);
 

@@ -16,16 +16,18 @@ interface ClientInterface
 {
     /**
      * Sign.
+     * @param string $cname
      * @return array
      */
-    public function sign(string $cname, int $expires = 60);
+    public function sign($cname, int $expires = 60);
 
     /**
      * Push.
+     * @param string $cname
      * @param array|string $content
      * @return bool
      */
-    public function push(string $cname, $content);
+    public function push($cname, $content);
 
     /**
      * Broadcast.
@@ -37,28 +39,32 @@ interface ClientInterface
 
     /**
      * Check.
+     * @param string $cname
      * @return bool
      */
-    public function check(string $cname);
+    public function check($cname);
 
     /**
      * Close.
      *
+     * @param string $cname
      * @return bool
      */
-    public function close(string $cname);
+    public function close($cname);
 
     /**
      * Clear.
+     * @param string $cname
      * @return bool
      */
-    public function clear(string $cname);
+    public function clear($cname);
 
     /**
      * Info.
+     * @param string $cname
      * @return array
      */
-    public function info(string $cname);
+    public function info($cname);
 
     /**
      * Psub.
