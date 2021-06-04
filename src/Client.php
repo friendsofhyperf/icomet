@@ -11,33 +11,32 @@ declare(strict_types=1);
 namespace FriendsOfHyperf\IComet;
 
 use Closure;
+use GuzzleHttp\Client as GuzzleHttpClient;
 use Hyperf\Guzzle\ClientFactory;
+use Psr\Container\ContainerInterface;
 use RuntimeException;
 
 class Client implements ClientInterface
 {
     /**
-     * @var \GuzzleHttp\Client
-     */
-    protected $client;
-
-    /**
      * @var ConfigInterface
      */
     protected $config;
 
-    public function __construct(ConfigInterface $config, ClientFactory $clientFactory)
+    /**
+     * @var ClientFactory
+     */
+    private $clientFactory;
+
+    public function __construct(ContainerInterface $container)
     {
-        $this->config = $config;
-        $this->client = $clientFactory->create([
-            'base_uri' => $config->get('uri'),
-            'timeout' => (int) $config->get('timeout', 5),
-        ]);
+        $this->config = $container->get(ConfigInterface::class);
+        $this->clientFactory = $container->get(ClientFactory::class);
     }
 
     public function sign($cname, int $expires = 60)
     {
-        $response = $this->client->request('GET', '/sign', ['query' => compact('cname', 'expires')]);
+        $response = $this->client()->request('GET', '/sign', ['query' => compact('cname', 'expires')]);
 
         return Response::make($response)->json();
     }
@@ -48,7 +47,7 @@ class Client implements ClientInterface
             $content = json_encode($content, JSON_UNESCAPED_UNICODE);
         }
 
-        $response = $this->client->request('GET', '/push', ['query' => compact('cname', 'content')]);
+        $response = $this->client()->request('GET', '/push', ['query' => compact('cname', 'content')]);
 
         return Response::make($response)->json('type') == 'ok';
     }
@@ -60,7 +59,7 @@ class Client implements ClientInterface
         }
 
         if (is_null($cnames)) {
-            $response = $this->client->request('GET', '/broadcast', ['query' => compact('content')]);
+            $response = $this->client()->request('GET', '/broadcast', ['query' => compact('content')]);
 
             return Response::make($response)->body() == 'ok';
         }
@@ -69,7 +68,7 @@ class Client implements ClientInterface
 
         foreach ((array) $cnames as $cname) {
             $callbacks[] = function () use ($cname, $content) {
-                $response = $this->client->request('GET', '/broadcast', ['query' => compact('cname', 'content')]);
+                $response = $this->client()->request('GET', '/broadcast', ['query' => compact('cname', 'content')]);
 
                 return Response::make($response)->body() == 'ok';
             };
@@ -80,28 +79,28 @@ class Client implements ClientInterface
 
     public function check($cname)
     {
-        $response = $this->client->request('GET', '/check', ['query' => compact('cname')]);
+        $response = $this->client()->request('GET', '/check', ['query' => compact('cname')]);
 
         return isset(Response::make($response)->json()[$cname]);
     }
 
     public function close($cname)
     {
-        $response = $this->client->request('GET', '/close', ['query' => compact('cname')]);
+        $response = $this->client()->request('GET', '/close', ['query' => compact('cname')]);
 
         return substr(Response::make($response)->body(), 0, 2) == 'ok';
     }
 
     public function clear($cname)
     {
-        $response = $this->client->request('GET', '/clear', ['query' => compact('cname')]);
+        $response = $this->client()->request('GET', '/clear', ['query' => compact('cname')]);
 
         return substr(Response::make($response)->body(), 0, 2) == 'ok';
     }
 
     public function info($cname = '')
     {
-        $response = $this->client->request('GET', '/info', ['query' => $cname ? compact('cname') : []]);
+        $response = $this->client()->request('GET', '/info', ['query' => $cname ? compact('cname') : []]);
 
         return Response::make($response)->json();
     }
@@ -131,5 +130,13 @@ class Client implements ClientInterface
         }
 
         fclose($handle);
+    }
+
+    protected function client(): GuzzleHttpClient
+    {
+        return $this->clientFactory->create([
+            'base_uri' => $this->config->get('uri'),
+            'timeout' => (int) $this->config->get('timeout', 5),
+        ]);
     }
 }

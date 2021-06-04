@@ -24,6 +24,7 @@ class Config implements ConfigInterface
         if ($key == '') {
             return $this->config;
         }
+
         return data_get($this->config, $key, $default);
     }
 }
