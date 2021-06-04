@@ -10,13 +10,14 @@ declare(strict_types=1);
  */
 namespace FriendsOfHyperf\IComet;
 
+use Hyperf\Contract\ConfigInterface;
 use Psr\Container\ContainerInterface;
 
 class ConfigFactory
 {
     public function __invoke(ContainerInterface $container)
     {
-        $config = $container->get(\Hyperf\Contract\ConfigInterface::class);
+        $config = $container->get(ConfigInterface::class);
 
         return new Config((array) $config->get('icomet', []));
     }
