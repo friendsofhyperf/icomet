@@ -14,4 +14,9 @@ return [
     'concurrent' => [
         'limit' => (int) env('ICOMET_CONCURRENT_LIMIT', 64),
     ],
+    'pool' => [
+        'max_connections' => 2048,
+        'retries' => 1,
+        'delay' => 10,
+    ],
 ];

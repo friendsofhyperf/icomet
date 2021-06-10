@@ -10,28 +10,35 @@ declare(strict_types=1);
  */
 namespace FriendsOfHyperf\IComet;
 
-use Closure;
+use FriendsOfHyperf\IComet\Http\ClientFactory;
+use FriendsOfHyperf\IComet\Http\Response;
 use GuzzleHttp\Client as GuzzleHttpClient;
-use Hyperf\Guzzle\ClientFactory;
+use Hyperf\Utils\Coroutine\Concurrent;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
 
 class Client implements ClientInterface
 {
     /**
-     * @var ConfigInterface
+     * @var array
      */
     protected $config;
 
     /**
      * @var ClientFactory
      */
-    private $clientFactory;
+    protected $clientFactory;
 
-    public function __construct(ContainerInterface $container)
+    /**
+     * @var Concurrent
+     */
+    protected $concurrent;
+
+    public function __construct(ContainerInterface $container, array $config = [])
     {
-        $this->config = $container->get(ConfigInterface::class);
+        $this->config = $config;
         $this->clientFactory = $container->get(ClientFactory::class);
+        $this->concurrent = new Concurrent((int) data_get($config, 'concurrent.limit', 128));
     }
 
     public function sign($cname, int $expires = 60)
@@ -64,17 +71,15 @@ class Client implements ClientInterface
             return Response::make($response)->body() == 'ok';
         }
 
-        $callbacks = [];
-
         foreach ((array) $cnames as $cname) {
-            $callbacks[] = function () use ($cname, $content) {
+            $this->concurrent->create(function () use ($cname, $content) {
                 $response = $this->client()->request('GET', '/broadcast', ['query' => compact('cname', 'content')]);
 
                 return Response::make($response)->body() == 'ok';
-            };
+            });
         }
 
-        return parallel($callbacks, (int) $this->config->get('concurrent.limit', 64));
+        return true;
     }
 
     public function check($cname)
@@ -105,9 +110,9 @@ class Client implements ClientInterface
         return Response::make($response)->json();
     }
 
-    public function psub(Closure $callback)
+    public function psub(callable $callback)
     {
-        $url = rtrim($this->config->get('uri'), '/') . '/psub';
+        $url = rtrim(data_get($this->config, 'uri'), '/') . '/psub';
         $handle = fopen($url, 'rb');
 
         if ($handle === false) {
@@ -135,8 +140,8 @@ class Client implements ClientInterface
     protected function client(): GuzzleHttpClient
     {
         return $this->clientFactory->create([
-            'base_uri' => $this->config->get('uri'),
-            'timeout' => (int) $this->config->get('timeout', 5),
+            'base_uri' => data_get($this->config, 'uri'),
+            'timeout' => (int) data_get($this->config, 'timeout', 5),
         ]);
     }
 }

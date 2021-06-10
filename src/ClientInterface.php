@@ -10,8 +10,6 @@ declare(strict_types=1);
  */
 namespace FriendsOfHyperf\IComet;
 
-use Closure;
-
 interface ClientInterface
 {
     /**
@@ -69,5 +67,5 @@ interface ClientInterface
     /**
      * Psub.
      */
-    public function psub(Closure $callback);
+    public function psub(callable $callback);
 }

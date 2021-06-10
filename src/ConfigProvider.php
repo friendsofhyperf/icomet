@@ -19,7 +19,6 @@ class ConfigProvider
         return [
             'dependencies' => [
                 ClientInterface::class => ClientFactory::class,
-                ConfigInterface::class => ConfigFactory::class,
             ],
             'annotations' => [
                 'scan' => [

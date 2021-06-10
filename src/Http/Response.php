@@ -8,7 +8,7 @@ declare(strict_types=1);
  * @document https://github.com/friendsofhyperf/icomet/blob/main/README.md
  * @contact  huangdijia@gmail.com
  */
-namespace FriendsOfHyperf\IComet;
+namespace FriendsOfHyperf\IComet\Http;
 
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
