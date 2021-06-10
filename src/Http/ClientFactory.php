@@ -55,7 +55,7 @@ class ClientFactory
             return null;
         }
 
-        if ($this->hasConfig('pool.max_connections')) {
+        if (Arr::has($this->config, 'pool.max_connections')) {
             return $this->makePoolHandlerStack();
         }
 
@@ -70,13 +70,13 @@ class ClientFactory
     {
         $handler = make(PoolHandler::class, [
             'option' => [
-                'max_connections' => (int) $this->getConfig('pool.max_connections', 50),
+                'max_connections' => (int) Arr::get($this->config, 'pool.max_connections', 50),
             ],
         ]);
 
         $retry = make(RetryMiddleware::class, [
-            'retries' => (int) $this->getConfig('pool.retries', 1),
-            'delay' => (int) $this->getConfig('pool.delay', 10),
+            'retries' => (int) Arr::get($this->config, 'pool.retries', 1),
+            'delay' => (int) Arr::get($this->config, 'pool.delay', 10),
         ]);
 
         $stack = HandlerStack::create($handler);
@@ -91,19 +91,5 @@ class ClientFactory
     protected function makeCoroutineHandlerStack(): HandlerStack
     {
         return HandlerStack::create(new CoroutineHandler());
-    }
-
-    protected function hasConfig(string $key): bool
-    {
-        return Arr::has($this->config, $key);
-    }
-
-    /**
-     * @param mixed $default
-     * @return mixed
-     */
-    protected function getConfig(string $key, $default)
-    {
-        return Arr::get($this->config, $key, $default);
     }
 }
