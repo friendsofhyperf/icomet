@@ -73,9 +73,7 @@ class Client implements ClientInterface
 
         foreach ((array) $cnames as $cname) {
             $this->concurrent->create(function () use ($cname, $content) {
-                $response = $this->client()->request('GET', '/broadcast', ['query' => compact('cname', 'content')]);
-
-                return Response::make($response)->body() == 'ok';
+                $this->push($cname, $content);
             });
         }
 
