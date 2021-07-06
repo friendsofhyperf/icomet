@@ -32,7 +32,7 @@ class ConfigProvider
             'publish' => [
                 [
                     'id' => 'config',
-                    'description' => 'config file.',
+                    'description' => 'config file of icomet.',
                     'source' => __DIR__ . '/../publish/icomet.php',
                     'destination' => BASE_PATH . '/config/autoload/icomet.php',
                 ],
