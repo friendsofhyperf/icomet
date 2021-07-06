@@ -13,7 +13,6 @@
         }
     },
     "require": {
-        "hyperf/guzzle": "^2.0",
         "friendsofhyperf/http-client": "^0.1.1"
     },
     "require-dev": {
