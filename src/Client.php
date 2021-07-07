@@ -12,8 +12,6 @@ namespace FriendsOfHyperf\IComet;
 
 use FriendsOfHyperf\Http\Client\Http;
 use FriendsOfHyperf\Http\Client\PendingRequest;
-use FriendsOfHyperf\IComet\Http\ClientFactory;
-use FriendsOfHyperf\IComet\Http\Response;
 use Hyperf\Utils\Coroutine\Concurrent;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
@@ -26,11 +24,6 @@ class Client implements ClientInterface
     protected $config;
 
     /**
-     * @var ClientFactory
-     */
-    protected $clientFactory;
-
-    /**
      * @var Concurrent
      */
     protected $concurrent;
@@ -41,7 +34,7 @@ class Client implements ClientInterface
         $this->concurrent = new Concurrent((int) data_get($config, 'concurrent.limit', 128));
     }
 
-    public function sign($cname, int $expires = 60)
+    public function sign($cname, int $expires = 60): array
     {
         return $this->client()
             ->get('/sign', compact('cname', 'expires'))
@@ -49,7 +42,7 @@ class Client implements ClientInterface
             ->json();
     }
 
-    public function push($cname, $content)
+    public function push($cname, $content): bool
     {
         if (is_array($content)) {
             $content = json_encode($content, JSON_UNESCAPED_UNICODE);
@@ -61,7 +54,7 @@ class Client implements ClientInterface
             ->json('type') == 'ok';
     }
 
-    public function broadcast($content, $cnames = null)
+    public function broadcast($content, $cnames = null): bool
     {
         if (is_array($content)) {
             $content = json_encode($content, JSON_UNESCAPED_UNICODE);
@@ -83,7 +76,7 @@ class Client implements ClientInterface
         return true;
     }
 
-    public function check($cname)
+    public function check($cname): bool
     {
         return with(
             $this->client()
@@ -96,9 +89,9 @@ class Client implements ClientInterface
         );
     }
 
-    public function close($cname)
+    public function close($cname): bool
     {
-        with(
+        return with(
             $this->client()
                 ->get('/close', compact('cname'))
                 ->throw()
@@ -109,7 +102,7 @@ class Client implements ClientInterface
         );
     }
 
-    public function clear($cname)
+    public function clear($cname): bool
     {
         return with(
             $this->client()
@@ -122,7 +115,7 @@ class Client implements ClientInterface
         );
     }
 
-    public function info($cname = '')
+    public function info($cname = ''): array
     {
         return $this->client()
             ->get('/info', $cname ? compact('cname') : [])
@@ -130,13 +123,13 @@ class Client implements ClientInterface
             ->json();
     }
 
-    public function psub(callable $callback)
+    public function psub(callable $callback): void
     {
         $url = rtrim(data_get($this->config, 'uri'), '/') . '/psub';
         $handle = fopen($url, 'rb');
 
         if ($handle === false) {
-            throw new RuntimeException('Cannot open ' . $url);
+            throw new RuntimeException('Failed to open stream:' . $url);
         }
 
         while (! feof($handle)) {
@@ -147,11 +140,9 @@ class Client implements ClientInterface
                 continue;
             }
 
-            $data = explode(' ', $line, 2);
-            $status = (int) ($data[0] ?? 0);
-            $channel = (int) ($data[1] ?? 0);
+            [$status, $channel] = explode(' ', $line, 2) + [0, 0];
 
-            $callback($channel, $status);
+            $callback((int) $channel, (int) $status);
         }
 
         fclose($handle);
