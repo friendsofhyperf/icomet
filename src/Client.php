@@ -19,18 +19,12 @@ use RuntimeException;
 class Client implements ClientInterface
 {
     /**
-     * @var array
-     */
-    protected $config;
-
-    /**
      * @var Concurrent
      */
     protected $concurrent;
 
-    public function __construct(ContainerInterface $container, array $config = [])
+    public function __construct(ContainerInterface $container, protected array $config = [])
     {
-        $this->config = $config;
         $this->concurrent = new Concurrent((int) data_get($config, 'concurrent.limit', 128));
     }
 
@@ -82,10 +76,7 @@ class Client implements ClientInterface
             $this->client()
                 ->get('/check', compact('cname'))
                 ->throw()
-                ->json(),
-            function ($json) use ($cname) {
-                return isset($json[$cname]);
-            }
+                ->json()
         );
     }
 
@@ -95,10 +86,7 @@ class Client implements ClientInterface
             $this->client()
                 ->get('/close', compact('cname'))
                 ->throw()
-                ->body(),
-            function ($body) {
-                return substr($body, 0, 2) == 'ok';
-            }
+                ->body()
         );
     }
 
@@ -108,10 +96,7 @@ class Client implements ClientInterface
             $this->client()
                 ->get('/clear', compact('cname'))
                 ->throw()
-                ->body(),
-            function ($body) {
-                return substr($body, 0, 2) == 'ok';
-            }
+                ->body()
         );
     }
 

@@ -21,16 +21,14 @@ interface ClientInterface
     /**
      * Push.
      * @param string $cname
-     * @param array|string $content
      */
-    public function push($cname, $content): bool;
+    public function push($cname, array|string $content): bool;
 
     /**
      * Broadcast.
-     * @param array|string $content
      * @param null|string|string[] $cnames
      */
-    public function broadcast($content, $cnames = null): bool;
+    public function broadcast(array|string $content, $cnames = null): bool;
 
     /**
      * Check.
