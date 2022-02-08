@@ -76,7 +76,8 @@ class Client implements ClientInterface
             $this->client()
                 ->get('/check', compact('cname'))
                 ->throw()
-                ->json()
+                ->json(),
+            fn ($json) => isset($json[$cname])
         );
     }
 
@@ -86,7 +87,8 @@ class Client implements ClientInterface
             $this->client()
                 ->get('/close', compact('cname'))
                 ->throw()
-                ->body()
+                ->body(),
+            fn ($body) => substr($body, 0, 2) == 'ok'
         );
     }
 
@@ -96,7 +98,8 @@ class Client implements ClientInterface
             $this->client()
                 ->get('/clear', compact('cname'))
                 ->throw()
-                ->body()
+                ->body(),
+            fn ($body) => substr($body, 0, 2) == 'ok'
         );
     }
 
