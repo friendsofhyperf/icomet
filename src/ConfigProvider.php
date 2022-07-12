@@ -5,7 +5,7 @@ declare(strict_types=1);
  * This file is part of icomet.
  *
  * @link     https://github.com/friendsofhyperf/icomet
- * @document https://github.com/friendsofhyperf/icomet/blob/main/README.md
+ * @document https://github.com/friendsofhyperf/icomet/blob/0.x/README.md
  * @contact  huangdijia@gmail.com
  */
 namespace FriendsOfHyperf\IComet;
@@ -32,7 +32,7 @@ class ConfigProvider
             'publish' => [
                 [
                     'id' => 'config',
-                    'description' => 'config file.',
+                    'description' => 'config file of icomet.',
                     'source' => __DIR__ . '/../publish/icomet.php',
                     'destination' => BASE_PATH . '/config/autoload/icomet.php',
                 ],

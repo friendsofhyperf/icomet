@@ -5,14 +5,13 @@ declare(strict_types=1);
  * This file is part of icomet.
  *
  * @link     https://github.com/friendsofhyperf/icomet
- * @document https://github.com/friendsofhyperf/icomet/blob/main/README.md
+ * @document https://github.com/friendsofhyperf/icomet/blob/0.x/README.md
  * @contact  huangdijia@gmail.com
  */
 namespace FriendsOfHyperf\IComet;
 
-use FriendsOfHyperf\IComet\Http\ClientFactory;
-use FriendsOfHyperf\IComet\Http\Response;
-use GuzzleHttp\Client as GuzzleHttpClient;
+use FriendsOfHyperf\Http\Client\Http;
+use FriendsOfHyperf\Http\Client\PendingRequest;
 use Hyperf\Utils\Coroutine\Concurrent;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
@@ -25,11 +24,6 @@ class Client implements ClientInterface
     protected $config;
 
     /**
-     * @var ClientFactory
-     */
-    protected $clientFactory;
-
-    /**
      * @var Concurrent
      */
     protected $concurrent;
@@ -37,38 +31,40 @@ class Client implements ClientInterface
     public function __construct(ContainerInterface $container, array $config = [])
     {
         $this->config = $config;
-        $this->clientFactory = $container->get(ClientFactory::class);
         $this->concurrent = new Concurrent((int) data_get($config, 'concurrent.limit', 128));
     }
 
-    public function sign($cname, int $expires = 60)
+    public function sign($cname, int $expires = 60): array
     {
-        $response = $this->client()->request('GET', '/sign', ['query' => compact('cname', 'expires')]);
-
-        return Response::make($response)->json();
+        return $this->client()
+            ->get('/sign', compact('cname', 'expires'))
+            ->throw()
+            ->json();
     }
 
-    public function push($cname, $content)
+    public function push($cname, $content): bool
     {
         if (is_array($content)) {
             $content = json_encode($content, JSON_UNESCAPED_UNICODE);
         }
 
-        $response = $this->client()->request('GET', '/push', ['query' => compact('cname', 'content')]);
-
-        return Response::make($response)->json('type') == 'ok';
+        return $this->client()
+            ->get('/push', compact('cname', 'content'))
+            ->throw()
+            ->json('type') == 'ok';
     }
 
-    public function broadcast($content, $cnames = null)
+    public function broadcast($content, $cnames = null): bool
     {
         if (is_array($content)) {
             $content = json_encode($content, JSON_UNESCAPED_UNICODE);
         }
 
         if (is_null($cnames)) {
-            $response = $this->client()->request('GET', '/broadcast', ['query' => compact('content')]);
-
-            return Response::make($response)->body() == 'ok';
+            return $this->client()
+                ->get('/broadcast', compact('content'))
+                ->throw()
+                ->body() == 'ok';
         }
 
         foreach ((array) $cnames as $cname) {
@@ -80,41 +76,60 @@ class Client implements ClientInterface
         return true;
     }
 
-    public function check($cname)
+    public function check($cname): bool
     {
-        $response = $this->client()->request('GET', '/check', ['query' => compact('cname')]);
-
-        return isset(Response::make($response)->json()[$cname]);
+        return with(
+            $this->client()
+                ->get('/check', compact('cname'))
+                ->throw()
+                ->json(),
+            function ($json) use ($cname) {
+                return isset($json[$cname]);
+            }
+        );
     }
 
-    public function close($cname)
+    public function close($cname): bool
     {
-        $response = $this->client()->request('GET', '/close', ['query' => compact('cname')]);
-
-        return substr(Response::make($response)->body(), 0, 2) == 'ok';
+        return with(
+            $this->client()
+                ->get('/close', compact('cname'))
+                ->throw()
+                ->body(),
+            function ($body) {
+                return substr($body, 0, 2) == 'ok';
+            }
+        );
     }
 
-    public function clear($cname)
+    public function clear($cname): bool
     {
-        $response = $this->client()->request('GET', '/clear', ['query' => compact('cname')]);
-
-        return substr(Response::make($response)->body(), 0, 2) == 'ok';
+        return with(
+            $this->client()
+                ->get('/clear', compact('cname'))
+                ->throw()
+                ->body(),
+            function ($body) {
+                return substr($body, 0, 2) == 'ok';
+            }
+        );
     }
 
-    public function info($cname = '')
+    public function info($cname = ''): array
     {
-        $response = $this->client()->request('GET', '/info', ['query' => $cname ? compact('cname') : []]);
-
-        return Response::make($response)->json();
+        return $this->client()
+            ->get('/info', $cname ? compact('cname') : [])
+            ->throw()
+            ->json();
     }
 
-    public function psub(callable $callback)
+    public function psub(callable $callback): void
     {
         $url = rtrim(data_get($this->config, 'uri'), '/') . '/psub';
         $handle = fopen($url, 'rb');
 
         if ($handle === false) {
-            throw new RuntimeException('Cannot open ' . $url);
+            throw new RuntimeException('Failed to open stream:' . $url);
         }
 
         while (! feof($handle)) {
@@ -125,21 +140,17 @@ class Client implements ClientInterface
                 continue;
             }
 
-            $data = explode(' ', $line, 2);
-            $status = (int) ($data[0] ?? 0);
-            $channel = (int) ($data[1] ?? 0);
+            [$status, $channel] = explode(' ', $line, 2) + [0, 0];
 
-            $callback($channel, $status);
+            $callback((int) $channel, (int) $status);
         }
 
         fclose($handle);
     }
 
-    protected function client(): GuzzleHttpClient
+    protected function client(): PendingRequest
     {
-        return $this->clientFactory->create([
-            'base_uri' => data_get($this->config, 'uri'),
-            'timeout' => (int) data_get($this->config, 'timeout', 5),
-        ]);
+        return Http::baseUrl(data_get($this->config, 'uri'))
+            ->timeout((int) data_get($this->config, 'timeout', 5));
     }
 }
