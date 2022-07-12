@@ -14,45 +14,39 @@ interface ClientInterface
 {
     /**
      * Sign.
-     * @param string $cname
      */
-    public function sign($cname, int $expires = 60): array;
+    public function sign(string $cname, int $expires = 60): array;
 
     /**
      * Push.
-     * @param string $cname
      */
-    public function push($cname, array|string $content): bool;
+    public function push(string $cname, array|string $content): bool;
 
     /**
      * Broadcast.
      * @param null|string|string[] $cnames
      */
-    public function broadcast(array|string $content, $cnames = null): bool;
+    public function broadcast(array|string $content, null|string|array $cnames = null): bool;
 
     /**
      * Check.
-     * @param string $cname
      */
-    public function check($cname): bool;
+    public function check(string $cname): bool;
 
     /**
      * Close.
-     * @param string $cname
      */
-    public function close($cname): bool;
+    public function close(string $cname): bool;
 
     /**
      * Clear.
-     * @param string $cname
      */
-    public function clear($cname): bool;
+    public function clear(string $cname): bool;
 
     /**
      * Info.
-     * @param string $cname
      */
-    public function info($cname): array;
+    public function info(string $cname): array;
 
     /**
      * Psub.

@@ -27,7 +27,7 @@ class Client implements ClientInterface
         $this->concurrent = new Concurrent((int) data_get($config, 'concurrent.limit', 128));
     }
 
-    public function sign($cname, int $expires = 60): array
+    public function sign(string $cname, int $expires = 60): array
     {
         return $this->client()
             ->get('/sign', compact('cname', 'expires'))
@@ -35,7 +35,7 @@ class Client implements ClientInterface
             ->json();
     }
 
-    public function push($cname, $content): bool
+    public function push(string $cname, array|string $content): bool
     {
         if (is_array($content)) {
             $content = json_encode($content, JSON_UNESCAPED_UNICODE);
@@ -47,7 +47,7 @@ class Client implements ClientInterface
             ->json('type') == 'ok';
     }
 
-    public function broadcast($content, $cnames = null): bool
+    public function broadcast(array|string $content, null|array|string $cnames = null): bool
     {
         if (is_array($content)) {
             $content = json_encode($content, JSON_UNESCAPED_UNICODE);
@@ -69,7 +69,7 @@ class Client implements ClientInterface
         return true;
     }
 
-    public function check($cname): bool
+    public function check(string $cname): bool
     {
         return with(
             $this->client()
@@ -80,7 +80,7 @@ class Client implements ClientInterface
         );
     }
 
-    public function close($cname): bool
+    public function close(string $cname): bool
     {
         return with(
             $this->client()
@@ -91,7 +91,7 @@ class Client implements ClientInterface
         );
     }
 
-    public function clear($cname): bool
+    public function clear(string $cname): bool
     {
         return with(
             $this->client()
@@ -102,7 +102,7 @@ class Client implements ClientInterface
         );
     }
 
-    public function info($cname = ''): array
+    public function info(string $cname = ''): array
     {
         return $this->client()
             ->get('/info', $cname ? compact('cname') : [])
