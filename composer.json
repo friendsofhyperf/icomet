@@ -1,6 +1,6 @@
 {
     "name": "friendsofhyperf/icomet",
-    "description": "IComet client for Hyperf.",
+    "description": "The IComet Client for Hyperf.",
     "type": "library",
     "license": "MIT",
     "authors": [{
@@ -13,13 +13,14 @@
         }
     },
     "require": {
-        "friendsofhyperf/http-client": "^1.0"
+        "friendsofhyperf/http-client": "^3.0",
+        "hyperf/di": "~3.0.0",
+        "hyperf/utils": "~3.0.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.0",
-        "swoole/ide-helper": "dev-master",
         "phpstan/phpstan": "^1.0",
-        "hyperf/di": "3.0.*"
+        "swoole/ide-helper": "dev-master"
     },
     "extra": {
         "hyperf": {
@@ -27,6 +28,7 @@
         }
     },
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "scripts": {
         "cs-fix": "php-cs-fixer fix $1",
         "analyse": "phpstan analyse --memory-limit 300M -l 0 -c phpstan.neon ./src"

@@ -5,7 +5,7 @@ declare(strict_types=1);
  * This file is part of icomet.
  *
  * @link     https://github.com/friendsofhyperf/icomet
- * @document https://github.com/friendsofhyperf/icomet/blob/main/README.md
+ * @document https://github.com/friendsofhyperf/icomet/blob/1.x/README.md
  * @contact  huangdijia@gmail.com
  */
 namespace FriendsOfHyperf\IComet;
@@ -13,7 +13,6 @@ namespace FriendsOfHyperf\IComet;
 use FriendsOfHyperf\Http\Client\Http;
 use FriendsOfHyperf\Http\Client\PendingRequest;
 use Hyperf\Utils\Coroutine\Concurrent;
-use Psr\Container\ContainerInterface;
 use RuntimeException;
 
 class Client implements ClientInterface
@@ -23,7 +22,7 @@ class Client implements ClientInterface
      */
     protected $concurrent;
 
-    public function __construct(ContainerInterface $container, protected array $config = [])
+    public function __construct(protected array $config = [])
     {
         $this->concurrent = new Concurrent((int) data_get($config, 'concurrent.limit', 128));
     }
