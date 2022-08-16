@@ -17,10 +17,7 @@ use RuntimeException;
 
 class Client implements ClientInterface
 {
-    /**
-     * @var Concurrent
-     */
-    protected $concurrent;
+    protected Concurrent $concurrent;
 
     public function __construct(protected array $config = [])
     {

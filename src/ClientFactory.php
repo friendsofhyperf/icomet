@@ -18,7 +18,7 @@ class ClientFactory
     public function __invoke(ContainerInterface $container)
     {
         return make(Client::class, [
-            'config' => $container->get(ConfigInterface::class)->get('icomet'),
+            'config' => (array) $container->get(ConfigInterface::class)->get('icomet', []),
         ]);
     }
 }
