@@ -24,7 +24,6 @@ interface ClientInterface
 
     /**
      * Broadcast.
-     * @param null|string|string[] $cnames
      */
     public function broadcast(array|string $content, null|string|array $cnames = null): bool;
 
