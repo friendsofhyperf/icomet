@@ -14,14 +14,9 @@ class ConfigProvider
 {
     public function __invoke(): array
     {
+        defined('BASE_PATH') || define('BASE_PATH', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR);
+
         return [
-            // 'annotations' => [
-            //     'scan' => [
-            //         'paths' => [
-            //             __DIR__,
-            //         ],
-            //     ],
-            // ],
             'dependencies' => [
                 ClientInterface::class => ClientFactory::class,
             ],
