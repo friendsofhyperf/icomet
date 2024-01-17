@@ -8,6 +8,7 @@ declare(strict_types=1);
  * @document https://github.com/friendsofhyperf/icomet/blob/1.x/README.md
  * @contact  huangdijia@gmail.com
  */
+
 namespace FriendsOfHyperf\IComet;
 
 class ConfigProvider
