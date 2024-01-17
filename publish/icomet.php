@@ -8,6 +8,8 @@ declare(strict_types=1);
  * @document https://github.com/friendsofhyperf/icomet/blob/1.x/README.md
  * @contact  huangdijia@gmail.com
  */
+use function Hyperf\Support\env;
+
 return [
     'uri' => env('ICOMET_URI', 'http://127.0.0.1:8000'),
     'timeout' => (int) env('ICOMET_TIMEOUT', 5),
