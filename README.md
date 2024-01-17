@@ -9,12 +9,12 @@ IComet Client for Hyperf
 
 ## Installation
 
-```bash
+```shell
 composer require friendsofhyperf/icomet
 ```
 
 ## Publish
 
-```bash
+```shell
 php bin/hyperf.php vendor:publish friendsofhyperf/icomet
 ```
