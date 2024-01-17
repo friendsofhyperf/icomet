@@ -13,6 +13,8 @@ namespace FriendsOfHyperf\IComet;
 use Hyperf\Contract\ConfigInterface;
 use Psr\Container\ContainerInterface;
 
+use function Hyperf\Support\make;
+
 class ClientFactory
 {
     public function __invoke(ContainerInterface $container)

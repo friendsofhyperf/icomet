@@ -12,8 +12,11 @@ namespace FriendsOfHyperf\IComet;
 
 use FriendsOfHyperf\Http\Client\Http;
 use FriendsOfHyperf\Http\Client\PendingRequest;
-use Hyperf\Utils\Coroutine\Concurrent;
+use Hyperf\Coroutine\Concurrent;
 use RuntimeException;
+
+use function Hyperf\Collection\data_get;
+use function Hyperf\Support\with;
 
 class Client implements ClientInterface
 {

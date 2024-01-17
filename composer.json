@@ -13,9 +13,12 @@
         }
     },
     "require": {
-        "friendsofhyperf/http-client": "^3.0",
-        "hyperf/di": "~3.0.0",
-        "hyperf/utils": "~3.0.0"
+        "friendsofhyperf/http-client": "~3.1.0",
+        "hyperf/di": "~3.1.0",
+        "hyperf/utils": "~3.1.0",
+        "hyperf/support": "~3.1.0",
+        "hyperf/coroutine": "~3.1.0",
+        "hyperf/collection": "~3.1.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.0",
@@ -24,12 +27,15 @@
     "extra": {
         "hyperf": {
             "config": "FriendsOfHyperf\\IComet\\ConfigProvider"
+        },
+        "branch-alias": {
+            "dev-main": "3.1.x-dev"
         }
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
         "cs-fix": "php-cs-fixer fix $1",
-        "analyse": "phpstan analyse --memory-limit 300M -l 0 -c phpstan.neon ./src"
+        "analyse": "phpstan analyse --memory-limit 300M -l 0 -c phpstan.neon "
     }
 }
