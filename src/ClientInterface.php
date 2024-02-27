@@ -8,6 +8,7 @@ declare(strict_types=1);
  * @document https://github.com/friendsofhyperf/icomet/blob/1.x/README.md
  * @contact  huangdijia@gmail.com
  */
+
 namespace FriendsOfHyperf\IComet;
 
 interface ClientInterface
@@ -25,7 +26,7 @@ interface ClientInterface
     /**
      * Broadcast.
      */
-    public function broadcast(array|string $content, null|string|array $cnames = null): bool;
+    public function broadcast(array|string $content, null|array|string $cnames = null): bool;
 
     /**
      * Check.
