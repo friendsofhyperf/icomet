@@ -15,6 +15,7 @@ interface ClientInterface
 {
     /**
      * Sign.
+     * @return array{type:string,cname:string,seq:int,token:string,expires:int, sub_timeout:int}
      */
     public function sign(string $cname, int $expires = 60): array;
 
@@ -25,6 +26,7 @@ interface ClientInterface
 
     /**
      * Broadcast.
+     * @return array{type:string}
      */
     public function broadcast(array|string $content, null|array|string $cnames = null): bool;
 
@@ -45,6 +47,7 @@ interface ClientInterface
 
     /**
      * Info.
+     * @return array{?version:string,?channels:int,subscribers:int,cname:?string}
      */
     public function info(string $cname): array;
 
